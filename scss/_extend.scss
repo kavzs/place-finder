@@ -1,1 +1,73 @@
 /* Search container */
+body:before {
+	content: 'phone';
+	display: none;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+.wrapper {
+	flex-flow: column;
+}
+
+.container-fluid {
+	/*flex-wrap: wrap;*/
+	flex-direction: column;
+	padding: 0px;
+}
+
+/* Map container */
+#map {
+	height: calc(100vh - 58px);
+	transition: height 1s;
+}
+
+/* Search details container */
+#search-details {
+	background-color: $whiteThree;
+	display: none;
+	justify-content: space-around;
+	align-items: center;
+	flex-wrap: wrap;
+	min-height: 50vh;
+	padding: 10px;
+}
+
+.search-options-header,
+.search-details-header {
+	justify-content: space-between;
+	flex-wrap: nowrap;
+	flex-direction: row;
+	h2 {
+		flex: 0 0 auto;
+		display: inline-flex;
+	}
+	.search-close {
+		flex: 0 0 auto;
+	}
+}
+
+.search-container {
+	padding: 0px !important;
+	z-index: 35000;
+}
+
+.search-header {
+	background-color: $whiteOne;
+	align-items: center;
+	justify-content: space-between;
+	box-shadow: 0 10px 6px -6px rgba(119,119,119,0.3);
+	padding: 10px;
+}
+
+/* Search options container */
+#search-options {
+	background-color: $whiteTwo;
+	/* remove height after being filled out with search options. */
+	display: none;
+	padding: 10px;
+	z-index: 35000;
+}
+
