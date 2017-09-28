@@ -71,3 +71,41 @@ body:before {
 	z-index: 35000;
 }
 
+@include media-breakpoint-up(md) {
+	body:before {
+		content: 'tablet';
+	}
+
+	.wrapper {
+		flex-flow: row;
+	}
+	
+	#start-search, #search-options>.search-close {
+		display: none;
+	}
+
+	.search-header, #search-options {
+		align-items: flex-start;
+		position: initial;
+		box-shadow: 0;
+		display: flex;
+		flex-flow: column;
+	}
+	
+	#map {
+		height: 100vh;
+	}
+
+	#search-options {
+		height: calc(100vh - 58px);
+	}
+
+	.search-container {
+		position: initial;
+	}
+	
+	.search-options-header .search-close {
+		display: none;
+	}
+}
+
