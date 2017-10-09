@@ -1,3 +1,85 @@
+// Initiate map
+const version = '?v=20170901';
+const clientid = '&client_id=AVN22MT2XHHXNHVBHGQMTYOKYCBQOJQMLF1GJOU30N1JDEXH';
+const clientSecret = '&client_secret=GU0EDF0V2GPP2GXLCEQMYP1ILA3PG3CPRXCJP23SLMYFU41G';
+const key = version + clientid + clientSecret;
+
+// Lines of code to get breakpoint
+let breakpoint = {};
+breakpoint.refreshValue = function() {
+	this.value = window.getComputedStyle(document.querySelector('body'), ':before')
+										 .getPropertyValue('content').replace(/\"/g, '');
+}
+$(window).resize(function() {
+	breakpoint.refreshValue();
+}).resize();
+
+// Pseudo-constructor for divs
+$('#search-options').data('isOpen', false);
+$('#search-details').data('isOpen', false);
+
+
+let center = [-36.849046,174.765305];
+let map = L.map('map',{zoomControl:false}).setView(center,15);
+L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYWJldGxvZ2FuIiwiYSI6ImNqNmFhNWw0czEwcWUycG55Z3h3YzFyMGYifQ.txrUggxbLPIanNvZxtaAYQ').addTo(map);
+L.circle(center, {
+					radius: 500,
+					color: 'salmon',
+					weight:1,
+					fill:false
+				}).addTo(map);
+//Explore venues -- foursquare api
+let exploreUrl = 'https://api.foursquare.com/v2/venues/explore'+key+'&ll=-36.849046,174.765305';
+$.ajax({
+	url:exploreUrl,
+	dataType:'jsonp',
+	success:function(res){
+		let data = res.response.groups[0].items;
+		console.log(data);
+		let venues = _(data).map(function(item){
+			return {
+					latlng:[item.venue.location.lat,item.venue.location.lng],
+					description: item.venue.name,
+					iconImage: getIcon(item.venue.categories[0].shortName),
+					venueid: item.venue.id,
+					category: item.venue.categories[0].shortName
+				};
+		});
+		_(venues).each(function(venue){
+			let venueIcon = L.icon({
+										iconUrl: venue.iconImage,
+										iconSize:[35,35]
+									});
+			let marker = L.marker(venue.latlng,{icon:venueIcon}).addTo(map);
+			marker.venueid = venue.venueid;
+			marker.on('click', function(e){
+				console.log(venue.category);
+				let venueUrl = 'https://api.foursquare.com/v2/venues/' + this.venueid + key;
+				$.ajax({
+					url:venueUrl,
+					dataType:'jsonp',
+					success:function(res){
+						let photos = res.response.venue.photos.groups[0].items;
+						$('.modal-title').text(res.response.venue.name);
+						$('.modal-body').empty();
+						_(photos).each(function(photo){
+							let photoPath = photo.prefix + '100x100' + photo.suffix;					
+							$('<img src=' + photoPath + '>').appendTo('.modal-body');
+						});
+						$('#myModal').modal('show');
+					}
+				});
+
+					toggleSearchDetails();
+					setTimeout(function(){
+						map.invalidateSize(true);
+						map.setView(e.target.getLatLng(),17);
+					},500);									
+			});
+		});
+	}
+});
+
 function getIcon(category) {
 	if (~category.indexOf('Bar') || ~category.indexOf('Brewery')) {
 		return 'svg/food/002-soft-drink-3.svg';
